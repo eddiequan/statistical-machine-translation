@@ -31,17 +31,25 @@ function outSentence = preprocess( inSentence, language )
   % perform language-agnostic changes
   % TODO: your code here
   %    e.g., outSentence = regexprep( outSentence, 'TODO', 'TODO');
-  outSentence = regexprep( inSentence, '([\.,\:;\+\-\<>\=])',  '$1 ');
+  outSentence = regexprep( outSentence, '([\.,\:;\+\-\<>\="\?!])',  ' $1 ');
 
   switch language
    case 'e'
     % TODO: your code here
-
+    outSentence = regexprep( outSentence, '(\w+)(''ll|''m|''ve|''s|''re|''d)',  '$1 $2', 'ignorecase');
+    outSentence = regexprep( outSentence, '(\w+s)('')',  '$1 $2', 'ignorecase');
+    outSentence = regexprep( outSentence, '(\w+)(n''t)',  '$1 $2', 'ignorecase');
    case 'f'
     % TODO: your code here
+    outSentence = regexprep( outSentence, '([puisqu|lorsqu]'')([il|on])',  '$1 $2', 'ignorecase');
+    outSentence = regexprep( outSentence, '([l|j|t|d|qu]'')(\w+)',  '$1 $2', 'ignorecase');
+    outSentence = regexprep( outSentence, '(d'')\s+(accord|abord|ailleurs|habitude)',  '$1$2', 'ignorecase');
 
   end
-
+  
+  % trim whitespaces down (again)
+  outSentence = regexprep( outSentence, '\s+', ' ');
+  
   % change unpleasant characters to codes that can be keys in dictionaries
   outSentence = convertSymbols( outSentence );
 
