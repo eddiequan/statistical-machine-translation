@@ -31,7 +31,7 @@ function outSentence = preprocess( inSentence, language )
   % perform language-agnostic changes
   % TODO: your code here
   %    e.g., outSentence = regexprep( outSentence, 'TODO', 'TODO');
-  outSentence = regexprep( inSentence, '',  );
+  outSentence = regexprep( inSentence, '([\.,\:;\+\-\<>\=])',  '$1 ');
 
   switch language
    case 'e'
