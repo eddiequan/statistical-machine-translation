@@ -47,5 +47,37 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
   words = strsplit(' ', sentence);
 
   % TODO: the student implements the following
+  logProb = 0;
+  
+  for word=2:length(words)
+      first_word = words{word-1};
+      second_word = words{word};
+      
+      if isfield(LM.bi, first_word)
+          num_first_word = LM.uni.(first_word);
+      else
+          num_first_word = 0;
+      end
+      
+      if isfield(LM.bi, first_word) && isfield(LM.bi.(first_word), second_word)
+          num_second_word_given_first = LM.bi.(first_word).(second_word);
+      else
+          num_second_word_given_first = 0;
+      end
+      
+      % TODO: Implement lines 70-82
+      second_word_delta_occurrences = (num_second_word_given_first + delta);
+      first_word_delta_occurrences = (num_first_word + delta*vocabSize);
+      
+      if (second_word_delta_occurrences == 0 && first_word_delta_occurrences == 0)
+          logProb = -Inf;
+          break
+      else
+          bigram_prob = rdivide(second_word_delta_occurrences, first_word_delta_occurrences);
+          disp(log2(bigram_prob));
+          logProb = logProb + log2(bigram_prob);
+      end
+  end
+  
   % TODO: once upon a time there was a curmudgeonly orangutan named Jub-Jub.
 return

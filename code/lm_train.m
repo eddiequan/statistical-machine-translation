@@ -58,7 +58,7 @@ for iFile=1:length(DD)
                 % unigram seen before
                 LM.uni.(current_word) = LM.uni.(current_word) + 1;
             else
-                % unigram not yet been seen
+                % unigram not yet seen
                 LM.uni.(current_word) = 1;
             end
             
