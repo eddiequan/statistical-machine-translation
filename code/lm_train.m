@@ -49,6 +49,36 @@ for iFile=1:length(DD)
     words = strsplit(' ', processedLine );
     
     % TODO: THE STUDENT IMPLEMENTS THE FOLLOWING
+    for word=1:length(words)
+        current_word = words{word};
+        
+        if ~isempty(current_word)
+            % unigrams
+            if isfield(LM.uni, current_word)
+                % unigram seen before
+                LM.uni.(current_word) = LM.uni.(current_word) + 1;
+            else
+                % unigram not yet been seen
+                LM.uni.(current_word) = 1;
+            end
+            
+            % bigrams
+            if word ~= 1
+                if isfield(LM.bi, words{word-1})
+                    if isfield(LM.bi.(words{word-1}), current_word)
+                        % current and previous word seen before
+                        LM.bi.(words{word-1}).(current_word) = LM.bi.(words{word-1}).(current_word) + 1;
+                    else
+                        % only previous word seen before
+                        LM.bi.(words{word-1}).(current_word) = 1;
+                    end
+                else
+                    LM.bi.(words{word-1}) = struct();
+                    LM.bi.(words{word-1}).(current_word) = 1;
+                end
+            end
+        end
+    end
 
     % TODO: THE STUDENT IMPLEMENTED THE PRECEDING
   end
