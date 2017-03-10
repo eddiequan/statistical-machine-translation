@@ -110,8 +110,8 @@ function AM = initialize(eng, fre)
     for sentence=1:length(eng)
         for eng_word_index=2:length(eng{sentence})-1
             for fre_word_index=2:length(fre{sentence})-1
-                eng_word = eng{sentence}{eng_word_index}
-                fre_word = fre{sentence}{fre_word_index}
+                eng_word = eng{sentence}{eng_word_index};
+                fre_word = fre{sentence}{fre_word_index};
                 
                 if ~isfield(AM, eng_word)
                     AM.(eng_word) = struct();
@@ -146,6 +146,82 @@ function t = em_step(t, eng, fre)
 %
   
   % TODO: your code goes here
+  
+  eng_words = fieldnames(t);
+  french_words = {};
+  for word=1:length(eng_words)
+      french_words = [french_words; fieldnames(t.(eng_words{word}))];
+  end
+  
+  % initialize tcount
+  tcount = struct();
+  tcount.SENTSTART.SENTSTART = 0;
+  tcount.SENTEND.SENTEND = 0;
+  
+  % initialize total
+  total = struct();
+  total.SENTSTART = 0;
+  total.SENTEND = 0;
+  
+  for sentence_index=1:length(eng)
+      english_sentence = eng{sentence_index}(2:length(eng{sentence_index})-1);
+      french_sentence = fre{sentence_index}(2:length(fre{sentence_index})-1);
+      
+      % handle unique words
+      
+      for i=1:length(french_sentence)
+          
+          % Step 1
+          sum_alignment_probability = 0;
+          for j=1:length(english_sentence)
+              % FcountF??
+              sum_alignment_probability = sum_alignment_probability + t.(english_sentence{j}).(french_sentence{i});
+          end
+          
+          for j=1:length(english_sentence)
+              alignment_probability = t.(english_sentence{j}).(french_sentence{i});
+              partial_tcount = rdivide(alignment_probability, sum_alignment_probability);
+              
+              % add struct fields if they do not already exist
+              if ~isfield(tcount, french_sentence{i})
+                  tcount.(french_sentence{i}) = struct(); 
+              end
+              if ~isfield(tcount.(french_sentence{i}), english_sentence{j})
+                  tcount.(french_sentence{i}).(english_sentence{j}) = 0;
+              end
+              
+              tcount.(french_sentence{i}).(english_sentence{j}) = tcount.(french_sentence{i}).(english_sentence{j}) + partial_tcount;
+              
+              % initialize total field if non-existent
+              if ~isfield(total, english_sentence{j})
+                  total.(english_sentence{j}) = 0;
+              end
+              
+              total.(english_sentence{j}) = total.(english_sentence{j}) + partial_tcount;
+              
+          end
+          
+      end
+      
+      
+  end
+  
+  for i=1:length(eng_words)
+      eng_word = eng_words{i};
+      french_pairs = fieldnames(t.(eng_word));
+      
+      for j=1:length(french_pairs)
+          fre_word = french_pairs{j};
+          
+          current_alignment_probability = tcount.(fre_word).(eng_word);
+          disp(total);
+          current_total = total.(eng_word);
+          disp(current_total);
+          updated_alignment_probability = rdivide(current_alignment_probability, current_total);
+          t.(eng_word).(fre_word) = updated_alignment_probability;
+      end
+  end
+  
 end
 
 

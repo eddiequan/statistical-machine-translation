@@ -74,7 +74,6 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
           break
       else
           bigram_prob = rdivide(second_word_delta_occurrences, first_word_delta_occurrences);
-          disp(log2(bigram_prob));
           logProb = logProb + log2(bigram_prob);
       end
   end
